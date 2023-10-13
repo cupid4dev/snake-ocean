@@ -133,7 +133,8 @@ function draw(time) {
   function paint() {
     // clear and draw background
     ctx.fillStyle = '#111'
-    ctx.fillRect(0, 0, $canv.width, $canv.height)
+    ctx.drawImage(ASSETS.bg, 0, 0, $canv.width, $canv.height);
+    // ctx.fillRect("#0000", "#0000", $canv.width, $canv.height)
 
     // static position objects
     levelBar.draw(ctx)
@@ -324,6 +325,7 @@ function draw(time) {
 
 function loadAssets(cb) {
   var imgs = [
+    { name: 'bg', src: 'assets/bg.jpg' },
     { name: 'logo', src: 'assets/logo.png' },
     { name: 'logoSmall', src: 'assets/logo-small.png' },
     { name: 'soundOn', src: 'assets/sound-on.png' },
