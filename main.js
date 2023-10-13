@@ -1,5 +1,16 @@
 "use strict";
 
+const P2 = (x, y) => ({x,y});
+const EDGES = 6;
+const RADIUS = 80;
+const TAU = 2 * Math.PI;
+const EDGE_LEN = Math.sin(Math.PI / EDGES) * RADIUS * 2;
+const GRID_Y_SPACE = Math.cos(Math.PI / EDGES) * RADIUS * 2;
+const GRID_X_SPACE = RADIUS * 2 - EDGE_LEN * 0.5;
+const GRID_Y_OFFSET = GRID_Y_SPACE * 0.5;
+const COLS = "=#3c2f18,#01335f,#3f0e77,#204a73,#511d94,#fe1f00,#0060fd,#fe7603,#f0ca1d,#b085e8,#e9cafa".split(",");
+const rndItem = arr => arr[Math.random() * arr.length | 0];
+var gridPosX = 0, gridPosY = 0;
 function setGlobals() {
   // window.ext is set by cocoonjs
   window.isMobile = !!window.ext
@@ -129,12 +140,55 @@ function draw(time) {
     fishPhysics()
     playerScore()
   }
-
+ 
+  
+  function drawGrid(x, y, w, h, points, ctx) {
+    const p = P2();
+    var gy, gx;
+    for (gy = y; gy < y + h; gy++) {
+        for (gx = x; gx < x + w; gx++) {
+            ctx.fillStyle = "#0000";
+            drawPoly(gridToPixel(gx, gy, p), points, ctx);
+        }
+    }
+  }
+  function gridToPixel(gx, gy, p = {}) {
+      p.x = gx * GRID_X_SPACE;
+      p.y = gy * GRID_Y_SPACE + (gx % 2 ? GRID_Y_OFFSET : 0);       
+      return p;
+  }
+  function drawPoly(p, points, ctx) { // p.x, p.y is center
+      ctx.setTransform(1, 0, 0, 1, p.x - player.x, p.y - player.y);
+      var i = 0;
+      ctx.beginPath();
+      while (i < points.length) {
+          const p2 = points[i++];
+          ctx.lineTo(p2.x, p2.y);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+  }
+  function createPoly(sides, points = []) {
+      const step = TAU / sides;
+      var ang = 0, i = sides;
+      while (i--) {
+          points.push(P2(RADIUS * Math.cos(ang), RADIUS * Math.sin(ang)));
+          ang += step;
+      }
+      return points;
+  }
   function paint() {
     // clear and draw background
     ctx.fillStyle = '#111'
-    ctx.drawImage(ASSETS.bg, 0, 0, $canv.width, $canv.height);
-    // ctx.fillRect("#0000", "#0000", $canv.width, $canv.height)
+    ctx.fillRect(0, 0, $canv.width, $canv.height);
+    var tempCtx = ctx;
+    gridPosX = player.x;
+    gridPosY = player.y;
+    drawGrid(-20, -10, 200,100, createPoly(EDGES), ctx);
+    ctx = tempCtx;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    
 
     // static position objects
     levelBar.draw(ctx)
