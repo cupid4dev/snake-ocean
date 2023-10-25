@@ -163,6 +163,7 @@ function draw(time) {
       ctx.beginPath();
       while (i < points.length) {
           const p2 = points[i++];
+          ctx.strokeStyle = "gray";
           ctx.lineTo(p2.x, p2.y);
       }
       ctx.closePath();
